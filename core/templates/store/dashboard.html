@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Dashboard - Jitesh Store
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5 mt-5">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h1 class="fw-bold">
+                My Dashboard
+            </h1>
+
+            <p class="text-muted">
+                Welcome back, {{ user.username }}
+            </p>
+
+        </div>
+
+        <!-- STATS -->
+
+        <div class="row g-4 mb-5">
+
+            <div class="col-md-4">
+
+                <div class="card shadow border-0 rounded-4 text-center p-4">
+
+                    <h3 class="fw-bold text-primary">
+                        {{ orders.count }}
+                    </h3>
+
+                    <p class="text-muted">
+                        Total Orders
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="card shadow border-0 rounded-4 text-center p-4">
+
+                    <h3 class="fw-bold text-success">
+                        ₹{{ orders.first.total_amount|default:0 }}
+                    </h3>
+
+                    <p class="text-muted">
+                        Latest Order
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="card shadow border-0 rounded-4 text-center p-4">
+
+                    <h3 class="fw-bold text-danger">
+                        {{ cart_count }}
+                    </h3>
+
+                    <p class="text-muted">
+                        Cart Items
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- LIVE ORDER TRACKING -->
+
+        <div class="card shadow border-0 rounded-4">
+
+            <div class="card-body p-4">
+
+                <h3 class="fw-bold mb-4">
+                    Live Order Tracking
+                </h3>
+
+                {% for order in orders %}
+
+                    <div class="border rounded-4 p-4 mb-4">
+
+                        <div class="d-flex justify-content-between flex-wrap">
+
+                            <div>
+
+                                <h5 class="fw-bold">
+                                    {{ order.order_number }}
+                                </h5>
+
+                                <p class="text-muted">
+                                    ₹{{ order.total_amount }}
+                                </p>
+
+                            </div>
+
+                            <div>
+
+                                {% if order.status == 'pending' %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        Pending
+                                    </span>
+
+                                {% elif order.status == 'confirmed' %}
+
+                                    <span class="badge bg-info">
+                                        Confirmed
+                                    </span>
+
+                                {% elif order.status == 'shipped' %}
+
+                                    <span class="badge bg-primary">
+                                        Shipped
+                                    </span>
+
+                                {% elif order.status == 'delivered' %}
+
+                                    <span class="badge bg-success">
+                                        Delivered
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                        <!-- PROGRESS -->
+
+                        <div class="progress mt-4" style="height:12px;">
+
+                            {% if order.status == 'pending' %}
+
+                                <div class="progress-bar bg-warning" style="width:25%"></div>
+
+                            {% elif order.status == 'confirmed' %}
+
+                                <div class="progress-bar bg-info" style="width:50%"></div>
+
+                            {% elif order.status == 'shipped' %}
+
+                                <div class="progress-bar bg-primary" style="width:75%"></div>
+
+                            {% elif order.status == 'delivered' %}
+
+                                <div class="progress-bar bg-success" style="width:100%"></div>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                {% empty %}
+
+                    <div class="alert alert-info">
+
+                        No orders found.
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

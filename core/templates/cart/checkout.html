@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+Checkout - Jitesh Store
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5 mt-5">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h1 class="fw-bold">
+                Checkout
+            </h1>
+
+            <p class="text-muted">
+                Complete your order securely
+            </p>
+
+        </div>
+
+        <div class="row g-5">
+
+            <!-- Checkout Form -->
+
+            <div class="col-lg-7">
+
+                <div class="card shadow border-0 rounded-4">
+
+                    <div class="card-body p-4">
+
+                        <h4 class="fw-bold mb-4">
+                            Billing Details
+                        </h4>
+
+                        <form method="POST">
+
+                            {% csrf_token %}
+
+                            {{ form|crispy }}
+
+                            <div class="d-grid mt-4">
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary btn-lg"
+                                >
+                                    Place Order
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Order Summary -->
+
+            <div class="col-lg-5">
+
+                <div class="card shadow border-0 rounded-4">
+
+                    <div class="card-body p-4">
+
+                        <h4 class="fw-bold mb-4">
+                            Order Summary
+                        </h4>
+
+                        {% for item in cart.items.all %}
+
+                            <div class="d-flex justify-content-between mb-3">
+
+                                <div>
+
+                                    <h6 class="mb-1">
+                                        {{ item.product.name }}
+                                    </h6>
+
+                                    <small class="text-muted">
+                                        Qty:
+                                        {{ item.quantity }}
+                                    </small>
+
+                                </div>
+
+                                <span class="fw-bold">
+                                    ₹{{ item.total_price }}
+                                </span>
+
+                            </div>
+
+                        {% endfor %}
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
+
+                            <h5 class="fw-bold">
+                                Total
+                            </h5>
+
+                            <h5 class="fw-bold text-primary">
+                                ₹{{ total }}
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

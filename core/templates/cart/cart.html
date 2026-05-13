@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block title %}
+My Cart - Jitesh Store
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5 mt-5">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h1 class="fw-bold">
+                Shopping Cart
+            </h1>
+
+            <p class="text-muted">
+                Review your selected products
+            </p>
+
+        </div>
+
+        {% if cart and cart.items.all %}
+
+            <div class="row">
+
+                <!-- Cart Items -->
+
+                <div class="col-lg-8">
+
+                    {% for item in cart.items.all %}
+
+                        <div class="card mb-4 shadow-sm border-0">
+
+                            <div class="card-body">
+
+                                <div class="row align-items-center">
+
+                                    <!-- Image -->
+
+                                    <div class="col-md-3">
+
+                                        {% if item.product.thumbnail %}
+
+                                            <img
+                                                src="{{ item.product.thumbnail.url }}"
+                                                class="img-fluid rounded"
+                                                alt="{{ item.product.name }}"
+                                            >
+
+                                        {% else %}
+
+                                            <img
+                                                src="https://via.placeholder.com/150"
+                                                class="img-fluid rounded"
+                                                alt="No Image"
+                                            >
+
+                                        {% endif %}
+
+                                    </div>
+
+                                    <!-- Details -->
+
+                                    <div class="col-md-5">
+
+                                        <h5 class="fw-bold">
+                                            {{ item.product.name }}
+                                        </h5>
+
+                                        <p class="text-muted small">
+                                            {{ item.product.description|truncatechars:70 }}
+                                        </p>
+
+                                        <span class="fw-bold text-primary">
+                                            ₹{{ item.product.get_price }}
+                                        </span>
+
+                                    </div>
+
+                                    <!-- Quantity -->
+
+                                    <div class="col-md-2">
+
+                                        <input
+                                            type="number"
+                                            class="form-control"
+                                            value="{{ item.quantity }}"
+                                            min="1"
+                                            readonly
+                                        >
+
+                                    </div>
+
+                                    <!-- Total -->
+
+                                    <div class="col-md-2 text-end">
+
+                                        <h6 class="fw-bold">
+                                            ₹{{ item.total_price }}
+                                        </h6>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+                <!-- Summary -->
+
+                <div class="col-lg-4">
+
+                    <div class="card shadow border-0 rounded-4">
+
+                        <div class="card-body p-4">
+
+                            <h4 class="fw-bold mb-4">
+                                Cart Summary
+                            </h4>
+
+                            <div class="d-flex justify-content-between mb-3">
+
+                                <span>
+                                    Total Items
+                                </span>
+
+                                <span>
+                                    {{ cart.items.count }}
+                                </span>
+
+                            </div>
+
+                            <hr>
+
+                            <div class="d-flex justify-content-between mb-4">
+
+                                <h5 class="fw-bold">
+                                    Total
+                                </h5>
+
+                                <h5 class="fw-bold text-primary">
+                                    ₹{{ total }}
+                                </h5>
+
+                            </div>
+
+                            <div class="d-grid">
+
+                                <a
+                                    href="{% url 'checkout' %}"
+                                    class="btn btn-primary btn-lg"
+                                >
+                                    Proceed To Checkout
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <!-- Empty Cart -->
+
+            <div class="text-center py-5">
+
+                <h3 class="fw-bold">
+                    Your cart is empty
+                </h3>
+
+                <p class="text-muted">
+                    Add products to your cart
+                </p>
+
+                <a
+                    href="{% url 'product_list' %}"
+                    class="btn btn-primary"
+                >
+                    Shop Now
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

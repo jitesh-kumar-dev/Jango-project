@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{{ product.name }} - Jitesh Store
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5 mt-5">
+
+    <div class="container">
+
+        <div class="row g-5">
+
+            <!-- Product Image -->
+
+            <div class="col-lg-6">
+
+                <div class="card shadow-sm border-0">
+
+                    {% if product.thumbnail %}
+
+                        <img
+                            src="{{ product.thumbnail.url }}"
+                            class="img-fluid rounded"
+                            alt="{{ product.name }}"
+                            style="max-height:500px; object-fit:cover;"
+                        >
+
+                    {% else %}
+
+                        <img
+                            src="https://via.placeholder.com/600x500"
+                            class="img-fluid rounded"
+                            alt="No Image"
+                        >
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <!-- Product Details -->
+
+            <div class="col-lg-6">
+
+                <h1 class="fw-bold mb-3">
+                    {{ product.name }}
+                </h1>
+
+                <p class="text-muted">
+                    Category:
+                    {{ product.category.name }}
+                </p>
+
+                <!-- Price -->
+
+                <div class="mb-4">
+
+                    {% if product.discount_price %}
+
+                        <span class="fs-2 fw-bold text-danger">
+                            ₹{{ product.discount_price }}
+                        </span>
+
+                        <span class="fs-5 text-muted text-decoration-line-through ms-2">
+                            ₹{{ product.price }}
+                        </span>
+
+                    {% else %}
+
+                        <span class="fs-2 fw-bold text-primary">
+                            ₹{{ product.price }}
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+                <!-- Stock -->
+
+                <div class="mb-3">
+
+                    {% if product.stock > 0 %}
+
+                        <span class="badge bg-success p-2">
+                            In Stock
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-danger p-2">
+                            Out of Stock
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+                <!-- Description -->
+
+                <div class="mb-4">
+
+                    <h5 class="fw-bold">
+                        Description
+                    </h5>
+
+                    <p class="text-muted">
+                        {{ product.description }}
+                    </p>
+
+                </div>
+
+                <!-- Buttons -->
+
+               <div class="d-flex gap-3 flex-wrap">
+
+    <a
+        href="{% url 'add_to_cart' %}?product_id={{ product.id }}&quantity=1"
+        class="btn btn-primary btn-lg"
+    >
+        <i class="fas fa-shopping-cart"></i>
+        Add To Cart
+    </a>
+
+    <a
+        href="{% url 'product_list' %}"
+        class="btn btn-outline-secondary btn-lg"
+    >
+        Back To Products
+    </a>
+
+</div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Reviews -->
+
+        <div class="mt-5">
+
+            <h3 class="fw-bold mb-4">
+                Customer Reviews
+            </h3>
+
+            {% for review in reviews %}
+
+                <div class="card mb-3 shadow-sm border-0">
+
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between">
+
+                            <h6 class="fw-bold">
+                                {{ review.user.username }}
+                            </h6>
+
+                            <span class="text-warning">
+
+                                {% for i in "12345" %}
+
+                                    {% if forloop.counter <= review.rating %}
+
+                                        ★
+
+                                    {% else %}
+
+                                        ☆
+
+                                    {% endif %}
+
+                                {% endfor %}
+
+                            </span>
+
+                        </div>
+
+                        <p class="text-muted small">
+                            {{ review.created_at }}
+                        </p>
+
+                        <p>
+                            {{ review.comment }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <div class="alert alert-info">
+
+                    No reviews yet.
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+        <!-- Add Review -->
+
+        {% if user.is_authenticated %}
+
+            <div class="mt-5">
+
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-body">
+
+                        <h4 class="fw-bold mb-4">
+                            Add Review
+                        </h4>
+
+                        <form method="POST">
+
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+                                    Rating
+                                </label>
+
+                                {{ form.rating }}
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+                                    Comment
+                                </label>
+
+                                {{ form.comment }}
+
+                            </div>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                            >
+                                Submit Review
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <div class="alert alert-warning mt-5">
+
+                Please login to add a review.
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}
