@@ -12,50 +12,101 @@ Products - Jitesh Store
     <div class="container">
 
         <div class="text-center mb-5">
-
-            <h1 class="fw-bold">
-                Our Products
-            </h1>
-
+            <h1 class="fw-bold">Our Products</h1>
             <p class="text-muted">
-                Explore premium products with smart search
+                Search, filter, sort and shop products smartly
             </p>
-
         </div>
 
-        <!-- SMART SEARCH -->
+        <!-- SMART FILTER SECTION -->
 
-        <div class="row mb-5">
+        <div class="card shadow border-0 rounded-4 mb-5">
 
-            <div class="col-lg-8 mx-auto">
+            <div class="card-body p-4">
 
                 <form method="GET">
 
-                    <div class="input-group shadow">
+                    <div class="row g-3 align-items-end">
 
-                        <input
-                            type="text"
-                            id="searchInput"
-                            name="q"
-                            class="form-control form-control-lg"
-                            placeholder="Search products..."
-                            value="{{ request.GET.q }}"
-                        >
+                        <div class="col-md-4">
 
-                        <button
-                            class="btn btn-dark"
-                            type="button"
-                            id="voiceSearchBtn"
-                        >
-                            🎤
-                        </button>
+                            <label class="form-label fw-bold">
+                                Search Product
+                            </label>
 
-                        <button
-                            class="btn btn-primary"
-                            type="submit"
-                        >
-                            Search
-                        </button>
+                            <input
+                                type="text"
+                                name="q"
+                                id="searchInput"
+                                class="form-control"
+                                placeholder="Search products..."
+                                value="{{ query|default:'' }}"
+                            >
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <label class="form-label fw-bold">
+                                Category
+                            </label>
+
+                            <select name="category" class="form-select">
+
+                                <option value="">
+                                    All Categories
+                                </option>
+
+                                {% for category in categories %}
+
+                                    <option
+                                        value="{{ category.slug }}"
+                                        {% if category_slug == category.slug %}selected{% endif %}
+                                    >
+                                        {{ category.name }}
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <label class="form-label fw-bold">
+                                Sort By
+                            </label>
+
+                            <select name="sort" class="form-select">
+
+                                <option value="">
+                                    Default
+                                </option>
+
+                                <option value="latest" {% if sort == 'latest' %}selected{% endif %}>
+                                    Latest Products
+                                </option>
+
+                                <option value="low" {% if sort == 'low' %}selected{% endif %}>
+                                    Price: Low to High
+                                </option>
+
+                                <option value="high" {% if sort == 'high' %}selected{% endif %}>
+                                    Price: High to Low
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-2">
+
+                            <button class="btn btn-primary w-100">
+                                Apply
+                            </button>
+
+                        </div>
 
                     </div>
 
@@ -84,17 +135,41 @@ Products - Jitesh Store
                                 style="height:250px; object-fit:cover;"
                             >
 
+                        {% else %}
+
+                            <img
+                                src="https://via.placeholder.com/300x250"
+                                class="card-img-top rounded-top-4"
+                                alt="No Image"
+                            >
+
                         {% endif %}
 
                         <div class="card-body d-flex flex-column">
 
-                            {% if product.is_featured %}
+                            <div class="d-flex justify-content-between align-items-center mb-2">
 
-                                <span class="badge bg-danger mb-2">
-                                    HOT 🔥
-                                </span>
+                                {% if product.is_featured %}
+                                    <span class="badge bg-danger">
+                                        HOT 🔥
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        Product
+                                    </span>
+                                {% endif %}
 
-                            {% endif %}
+                                {% if user.is_authenticated %}
+                                    <a
+                                        href="{% url 'toggle_wishlist' product.id %}"
+                                        class="btn btn-sm btn-outline-danger rounded-circle"
+                                        title="Add to wishlist"
+                                    >
+                                        ❤️
+                                    </a>
+                                {% endif %}
+
+                            </div>
 
                             <h5 class="fw-bold">
                                 {{ product.name }}
@@ -150,47 +225,95 @@ Products - Jitesh Store
 
                 </div>
 
+            {% empty %}
+
+                <div class="col-12">
+
+                    <div class="alert alert-warning text-center">
+                        No products found.
+                    </div>
+
+                </div>
+
             {% endfor %}
 
         </div>
 
+        <!-- PAGINATION -->
+
+        {% if products.has_other_pages %}
+
+            <nav class="mt-5">
+
+                <ul class="pagination justify-content-center">
+
+                    {% if products.has_previous %}
+
+                        <li class="page-item">
+
+                            <a
+                                class="page-link"
+                                href="?page={{ products.previous_page_number }}"
+                            >
+                                Previous
+                            </a>
+
+                        </li>
+
+                    {% endif %}
+
+                    {% for num in products.paginator.page_range %}
+
+                        {% if products.number == num %}
+
+                            <li class="page-item active">
+
+                                <span class="page-link">
+                                    {{ num }}
+                                </span>
+
+                            </li>
+
+                        {% else %}
+
+                            <li class="page-item">
+
+                                <a
+                                    class="page-link"
+                                    href="?page={{ num }}"
+                                >
+                                    {{ num }}
+                                </a>
+
+                            </li>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                    {% if products.has_next %}
+
+                        <li class="page-item">
+
+                            <a
+                                class="page-link"
+                                href="?page={{ products.next_page_number }}"
+                            >
+                                Next
+                            </a>
+
+                        </li>
+
+                    {% endif %}
+
+                </ul>
+
+            </nav>
+
+        {% endif %}
+
     </div>
 
 </section>
-
-<!-- VOICE SEARCH -->
-
-<script>
-
-const voiceBtn = document.getElementById('voiceSearchBtn');
-
-if ('webkitSpeechRecognition' in window) {
-
-    const recognition = new webkitSpeechRecognition();
-
-    recognition.continuous = false;
-
-    recognition.lang = 'en-US';
-
-    recognition.interimResults = false;
-
-    recognition.maxAlternatives = 1;
-
-    voiceBtn.addEventListener('click', () => {
-
-        recognition.start();
-
-    });
-
-    recognition.onresult = function(event) {
-
-        document.getElementById('searchInput').value =
-            event.results[0][0].transcript;
-
-    };
-
-}
-
-</script>
 
 {% endblock %}

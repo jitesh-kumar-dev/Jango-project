@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Track Order - Jitesh Store
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5 mt-5">
+    <div class="container">
+
+        <div class="text-center mb-5">
+            <h1 class="fw-bold">Track Your Order</h1>
+            <p class="text-muted">Order Number: {{ order.order_number }}</p>
+        </div>
+
+        <div class="card shadow border-0 rounded-4">
+            <div class="card-body p-5">
+
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold">Current Status</h3>
+
+                    {% if order.status == 'pending' %}
+                        <span class="badge bg-warning text-dark fs-6 p-3">Pending</span>
+                    {% elif order.status == 'confirmed' %}
+                        <span class="badge bg-info fs-6 p-3">Confirmed</span>
+                    {% elif order.status == 'shipped' %}
+                        <span class="badge bg-primary fs-6 p-3">Shipped</span>
+                    {% elif order.status == 'delivered' %}
+                        <span class="badge bg-success fs-6 p-3">Delivered</span>
+                    {% elif order.status == 'cancelled' %}
+                        <span class="badge bg-danger fs-6 p-3">Cancelled</span>
+                    {% endif %}
+                </div>
+
+                <div class="progress mb-4" style="height: 18px;">
+                    {% if order.status == 'pending' %}
+                        <div class="progress-bar bg-warning" style="width: 25%"></div>
+                    {% elif order.status == 'confirmed' %}
+                        <div class="progress-bar bg-info" style="width: 50%"></div>
+                    {% elif order.status == 'shipped' %}
+                        <div class="progress-bar bg-primary" style="width: 75%"></div>
+                    {% elif order.status == 'delivered' %}
+                        <div class="progress-bar bg-success" style="width: 100%"></div>
+                    {% elif order.status == 'cancelled' %}
+                        <div class="progress-bar bg-danger" style="width: 100%"></div>
+                    {% endif %}
+                </div>
+
+                <div class="row text-center g-3">
+
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded-4">
+                            <h5>🧾</h5>
+                            <h6 class="fw-bold">Pending</h6>
+                            <small>Order placed</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded-4">
+                            <h5>✅</h5>
+                            <h6 class="fw-bold">Confirmed</h6>
+                            <small>Order confirmed</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded-4">
+                            <h5>🚚</h5>
+                            <h6 class="fw-bold">Shipped</h6>
+                            <small>Order shipped</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded-4">
+                            <h5>📦</h5>
+                            <h6 class="fw-bold">Delivered</h6>
+                            <small>Order delivered</small>
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr class="my-5">
+
+                <h4 class="fw-bold mb-3">Order Details</h4>
+
+                <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+                <p><strong>Total Amount:</strong> ₹{{ order.total_amount }}</p>
+                <p><strong>Payment Status:</strong> {{ order.payment_status }}</p>
+                <p><strong>Shipping Address:</strong> {{ order.shipping_address }}</p>
+                <p><strong>Order Date:</strong> {{ order.created_at }}</p>
+
+                <div class="text-center mt-4">
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary rounded-pill">
+                        Back To Dashboard
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

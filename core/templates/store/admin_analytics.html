@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Admin Analytics - Jitesh Store
+{% endblock %}
+
+{% block content %}
+
+<section class="py-5 mt-5">
+    <div class="container">
+
+        <div class="text-center mb-5">
+            <h1 class="fw-bold">Admin Analytics Dashboard</h1>
+            <p class="text-muted">
+                Sales, users, orders and product performance overview
+            </p>
+        </div>
+
+        <div class="row g-4 mb-5">
+
+            <div class="col-md-3">
+                <div class="card shadow border-0 rounded-4 text-center p-4">
+                    <h2 class="fw-bold text-primary">{{ total_users }}</h2>
+                    <p class="text-muted mb-0">Total Users</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow border-0 rounded-4 text-center p-4">
+                    <h2 class="fw-bold text-success">{{ total_products }}</h2>
+                    <p class="text-muted mb-0">Total Products</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow border-0 rounded-4 text-center p-4">
+                    <h2 class="fw-bold text-warning">{{ total_orders }}</h2>
+                    <p class="text-muted mb-0">Total Orders</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow border-0 rounded-4 text-center p-4">
+                    <h2 class="fw-bold text-danger">₹{{ total_revenue }}</h2>
+                    <p class="text-muted mb-0">Total Revenue</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row g-4 mb-5">
+
+            <div class="col-lg-6">
+                <div class="card shadow border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold mb-4">Top Selling Products</h4>
+                        <canvas id="topProductsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card shadow border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold mb-4">Order Status Report</h4>
+                        <canvas id="orderStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card shadow border-0 rounded-4">
+            <div class="card-body p-4">
+
+                <h4 class="fw-bold mb-4">Recent Orders</h4>
+
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>User</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for order in recent_orders %}
+                                <tr>
+                                    <td>{{ order.order_number }}</td>
+                                    <td>{{ order.user.username }}</td>
+                                    <td>₹{{ order.total_amount }}</td>
+                                    <td>
+                                        <span class="badge bg-primary">
+                                            {{ order.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ order.created_at }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">
+                                        No orders found.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const productNames = {{ product_names|safe }};
+    const productSales = {{ product_sales|safe }};
+    const statusLabels = {{ status_labels|safe }};
+    const statusCounts = {{ status_counts|safe }};
+
+    new Chart(document.getElementById('topProductsChart'), {
+        type: 'bar',
+        data: {
+            labels: productNames,
+            datasets: [{
+                label: 'Total Sold',
+                data: productSales
+            }]
+        }
+    });
+
+    new Chart(document.getElementById('orderStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                label: 'Orders',
+                data: statusCounts
+            }]
+        }
+    });
+</script>
+
+{% endblock %}

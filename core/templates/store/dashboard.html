@@ -7,157 +7,104 @@ Dashboard - Jitesh Store
 {% block content %}
 
 <section class="py-5 mt-5">
-
     <div class="container">
 
         <div class="text-center mb-5">
-
-            <h1 class="fw-bold">
-                My Dashboard
-            </h1>
-
-            <p class="text-muted">
-                Welcome back, {{ user.username }}
-            </p>
-
+            <h1 class="fw-bold">My Dashboard</h1>
+            <p class="text-muted">Welcome back, {{ user.username }}</p>
         </div>
 
-        <!-- STATS -->
+        <!-- USER PROFILE CARD -->
+        <div class="card shadow border-0 rounded-4 mb-5">
+            <div class="card-body p-4">
+                <h3 class="fw-bold mb-3">User Profile</h3>
+                <p><strong>Username:</strong> {{ user.username }}</p>
+                <p><strong>Email:</strong> {{ user.email|default:"Not added" }}</p>
+                <p><strong>First Name:</strong> {{ user.first_name|default:"Not added" }}</p>
+                <p><strong>Last Name:</strong> {{ user.last_name|default:"Not added" }}</p>
 
+                <a href="{% url 'profile' %}" class="btn btn-primary rounded-pill">
+                    Edit Profile
+                </a>
+            </div>
+        </div>
+
+        <!-- DASHBOARD STATS -->
         <div class="row g-4 mb-5">
 
             <div class="col-md-4">
-
                 <div class="card shadow border-0 rounded-4 text-center p-4">
-
-                    <h3 class="fw-bold text-primary">
-                        {{ orders.count }}
-                    </h3>
-
-                    <p class="text-muted">
-                        Total Orders
-                    </p>
-
+                    <h2 class="fw-bold text-primary">{{ total_orders|default:0 }}</h2>
+                    <p class="text-muted mb-0">Total Orders</p>
                 </div>
-
             </div>
 
             <div class="col-md-4">
-
                 <div class="card shadow border-0 rounded-4 text-center p-4">
-
-                    <h3 class="fw-bold text-success">
-                        ₹{{ orders.first.total_amount|default:0 }}
-                    </h3>
-
-                    <p class="text-muted">
-                        Latest Order
-                    </p>
-
+                    <h2 class="fw-bold text-success">₹{{ total_spent|default:0 }}</h2>
+                    <p class="text-muted mb-0">Total Spending</p>
                 </div>
-
             </div>
 
             <div class="col-md-4">
-
                 <div class="card shadow border-0 rounded-4 text-center p-4">
-
-                    <h3 class="fw-bold text-danger">
-                        {{ cart_count }}
-                    </h3>
-
-                    <p class="text-muted">
-                        Cart Items
-                    </p>
-
+                    <h2 class="fw-bold text-danger">{{ wishlist_items|length }}</h2>
+                    <p class="text-muted mb-0">Wishlist Count</p>
                 </div>
-
             </div>
 
         </div>
 
-        <!-- LIVE ORDER TRACKING -->
-
-        <div class="card shadow border-0 rounded-4">
-
+        <!-- ORDER STATUS / LIVE TRACKING -->
+        <div class="card shadow border-0 rounded-4 mb-5">
             <div class="card-body p-4">
 
-                <h3 class="fw-bold mb-4">
-                    Live Order Tracking
-                </h3>
+                <h3 class="fw-bold mb-4">Order Status</h3>
 
                 {% for order in orders %}
 
                     <div class="border rounded-4 p-4 mb-4">
 
-                        <div class="d-flex justify-content-between flex-wrap">
-
+                        <div class="d-flex justify-content-between flex-wrap mb-3">
                             <div>
-
-                                <h5 class="fw-bold">
-                                    {{ order.order_number }}
-                                </h5>
-
-                                <p class="text-muted">
-                                    ₹{{ order.total_amount }}
-                                </p>
-
+                                <h5 class="fw-bold">{{ order.order_number }}</h5>
+                                <p class="text-muted mb-0">Amount: ₹{{ order.total_amount }}</p>
                             </div>
 
                             <div>
-
                                 {% if order.status == 'pending' %}
-
-                                    <span class="badge bg-warning text-dark">
-                                        Pending
-                                    </span>
-
+                                    <span class="badge bg-warning text-dark">Pending</span>
                                 {% elif order.status == 'confirmed' %}
-
-                                    <span class="badge bg-info">
-                                        Confirmed
-                                    </span>
-
+                                    <span class="badge bg-info">Confirmed</span>
                                 {% elif order.status == 'shipped' %}
-
-                                    <span class="badge bg-primary">
-                                        Shipped
-                                    </span>
-
+                                    <span class="badge bg-primary">Shipped</span>
                                 {% elif order.status == 'delivered' %}
-
-                                    <span class="badge bg-success">
-                                        Delivered
-                                    </span>
-
+                                    <span class="badge bg-success">Delivered</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ order.status }}</span>
                                 {% endif %}
-
                             </div>
-
                         </div>
 
-                        <!-- PROGRESS -->
-
-                        <div class="progress mt-4" style="height:12px;">
-
+                        <div class="progress" style="height: 14px;">
                             {% if order.status == 'pending' %}
-
                                 <div class="progress-bar bg-warning" style="width:25%"></div>
-
                             {% elif order.status == 'confirmed' %}
-
                                 <div class="progress-bar bg-info" style="width:50%"></div>
-
                             {% elif order.status == 'shipped' %}
-
                                 <div class="progress-bar bg-primary" style="width:75%"></div>
-
                             {% elif order.status == 'delivered' %}
-
                                 <div class="progress-bar bg-success" style="width:100%"></div>
-
+                            {% else %}
+                                <div class="progress-bar bg-secondary" style="width:20%"></div>
                             {% endif %}
+                        </div>
 
+                        <div class="d-flex justify-content-between mt-2 small text-muted">
+                            <span>Pending</span>
+                            <span>Confirmed</span>
+                            <span>Shipped</span>
+                            <span>Delivered</span>
                         </div>
 
                     </div>
@@ -165,19 +112,130 @@ Dashboard - Jitesh Store
                 {% empty %}
 
                     <div class="alert alert-info">
-
                         No orders found.
-
                     </div>
 
                 {% endfor %}
 
             </div>
+        </div>
 
+        <!-- RECENT ORDERS -->
+        <div class="card shadow border-0 rounded-4 mb-5">
+            <div class="card-body p-4">
+
+                <h3 class="fw-bold mb-4">Recent Orders</h3>
+
+                {% if orders %}
+
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for order in orders %}
+                                    <tr>
+                                        <td>{{ order.order_number }}</td>
+                                        <td>₹{{ order.total_amount }}</td>
+                                        <td>
+                                            <span class="badge bg-primary">
+                                                {{ order.status }}
+                                            </span>
+                                        </td>
+                                        <td>{{ order.created_at }}</td>
+                                        <td>
+    <a
+        href="{% url 'track_order' order.order_number %}"
+        class="btn btn-sm btn-outline-primary rounded-pill"
+    >
+        Track
+    </a>
+</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                {% else %}
+
+                    <div class="alert alert-info">
+                        No recent orders available.
+                    </div>
+
+                {% endif %}
+
+            </div>
+        </div>
+
+        <!-- WISHLIST ITEMS -->
+        <div class="card shadow border-0 rounded-4">
+            <div class="card-body p-4">
+
+                <h3 class="fw-bold mb-4">My Wishlist</h3>
+
+                <div class="row g-4">
+
+                    {% for item in wishlist_items %}
+
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card h-100 shadow-sm border-0 rounded-4">
+
+                                {% if item.product.thumbnail %}
+                                    <img
+                                        src="{{ item.product.thumbnail.url }}"
+                                        class="card-img-top rounded-top-4"
+                                        style="height:200px; object-fit:cover;"
+                                        alt="{{ item.product.name }}"
+                                    >
+                                {% endif %}
+
+                                <div class="card-body">
+                                    <h6 class="fw-bold">{{ item.product.name }}</h6>
+                                    <p class="text-primary fw-bold">₹{{ item.product.get_price }}</p>
+
+                                    <a
+                                        href="{{ item.product.get_absolute_url }}"
+                                        class="btn btn-outline-primary w-100 rounded-pill mb-2"
+                                    >
+                                        View Product
+                                    </a>
+
+                                    <a
+                                        href="{% url 'toggle_wishlist' item.product.id %}"
+                                        class="btn btn-outline-danger w-100 rounded-pill"
+                                    >
+                                        Remove
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    {% empty %}
+
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                Your wishlist is empty.
+                            </div>
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
         </div>
 
     </div>
-
 </section>
 
 {% endblock %}

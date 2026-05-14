@@ -63,5 +63,25 @@ urlpatterns = [
         views.profile_view,
         name='profile'
     ),
+    path(
+    'wishlist/toggle/<int:product_id>/',
+    views.toggle_wishlist,
+    name='toggle_wishlist'
+),
+path(
+    'order/track/<str:order_number>/',
+    views.track_order,
+    name='track_order'
+),
+path(
+    'admin-analytics/',
+    views.admin_analytics,
+    name='admin_analytics'
+),
+path(
+    'ai-chatbot/',
+    views.ai_chatbot,
+    name='ai_chatbot'
+),
 
 ]
