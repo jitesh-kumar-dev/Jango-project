@@ -78,10 +78,5 @@ path(
     views.admin_analytics,
     name='admin_analytics'
 ),
-path(
-    'ai-chatbot/',
-    views.ai_chatbot,
-    name='ai_chatbot'
-),
 
 ]
