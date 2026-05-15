@@ -10,9 +10,6 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import login
 import uuid
-import json
-from decouple import config
-import google.generativeai as genai
 
 from .models import (
     Product, Category, Cart, CartItem, Order, OrderItem,
@@ -367,76 +364,3 @@ def admin_analytics(request):
         'status_labels': status_labels,
         'status_counts': status_counts,
     })
-@require_http_methods(["POST"])
-def ai_chatbot(request):
-    try:
-        data = json.loads(request.body)
-        user_message = data.get("message", "").strip()
-    except Exception:
-        return JsonResponse({
-            "reply": "Please send a valid message."
-        })
-
-    if not user_message:
-        return JsonResponse({
-            "reply": "Please type or speak what you want to buy."
-        })
-
-    products = Product.objects.filter(
-        is_active=True
-    ).select_related("category")[:30]
-
-    product_list = []
-
-    for product in products:
-        product_list.append(
-            f"Name: {product.name}, "
-            f"Category: {product.category.name}, "
-            f"Price: ₹{product.get_price}, "
-            f"Stock: {product.stock}"
-        )
-
-    products_text = "\n".join(product_list)
-
-    api_key = config("GEMINI_API_KEY", default="")
-
-    if not api_key:
-        return JsonResponse({
-            "reply": "AI key is not configured. Please add GEMINI_API_KEY in .env file."
-        })
-
-    prompt = f"""
-You are an AI shopping assistant for an ecommerce website named Jitesh Store.
-
-Your job:
-- Help users find products.
-- Recommend products only from the available product list.
-- Reply in simple English.
-- Keep answer short and useful.
-- If user asks in Hindi, reply in simple Hindi.
-- If matching products are found, suggest product names and price.
-- If no product matches, suggest searching another keyword.
-
-Available products:
-{products_text}
-
-User message:
-{user_message}
-"""
-
-    try:
-        client = genai.Client(api_key=api_key)
-
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
-
-        return JsonResponse({
-            "reply": response.text
-        })
-
-    except Exception as e:
-        return JsonResponse({
-            "reply": f"AI error: {str(e)}"
-        })
